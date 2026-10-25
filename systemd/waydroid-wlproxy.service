@@ -1,0 +1,14 @@
+[Unit]
+Description=Wayland proxy for Waydroid windows (no hotplug on resize, edge resize, caption maximize)
+Documentation=https://github.com/RedHatOnTop/waydroid-windows
+PartOf=graphical-session.target
+After=graphical-session.target
+
+[Service]
+Environment=WLPROXY_QUIET=1
+ExecStart=/usr/bin/python3 -I @ROOT@/wlproxy.py %t/wayland-wd ${WAYLAND_DISPLAY} -
+Restart=on-failure
+RestartSec=2
+
+[Install]
+WantedBy=graphical-session.target

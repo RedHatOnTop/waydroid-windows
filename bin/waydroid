@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+# Runs /usr/bin/waydroid with its Wayland connection routed through wlproxy
+# (waydroid-wlproxy.service). A session reads WAYLAND_DISPLAY from whichever command starts it,
+# and the desktop entries Waydroid regenerates call plain `waydroid`, so this wrapper is the one
+# place that covers app launchers, `session start` and `first-launch` alike.
+sock="${XDG_RUNTIME_DIR:-/run/user/$(id -u)}/wayland-wd"
+if ! systemctl --user -q is-active waydroid-wlproxy.service; then
+  systemctl --user start waydroid-wlproxy.service
+  for _ in 1 2 3 4 5 6 7 8 9 10; do [[ -S $sock ]] && break; sleep 0.2; done
+fi
+[[ -S $sock ]] && export WAYLAND_DISPLAY=$sock
+exec /usr/bin/waydroid "$@"
